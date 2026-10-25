@@ -1,0 +1,10 @@
+supported_targets = "native"
+
+import {
+  "V1GreenSummer/paddleocr",
+  "V1GreenSummer/paddleocr/engine",
+  "moonbitlang/core/env",
+  "moonbitlang/core/string",
+}
+
+pkgtype(kind: "executable")
