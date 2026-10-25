@@ -118,6 +118,7 @@ ctc.mbt / page.mbt               字典、CTC、Page
 error.mbt                        OcrError
 engine/                          native：Engine、EngineOptions、Backend 和批处理
 ocr/                             native 单入口：重导出 Engine 与结果/几何类型
+benchmarks/                      native 性能基准
 examples/ctc/                    不依赖模型的 CTC 最小示例
 cmd/ocr/                         native 可执行文件
 ```
@@ -286,11 +287,30 @@ native 侧额外提供：
 - JPEG 只支持 baseline。自然场景的效果取决于检测模型；阈值沿用 Paddle 的默认值。
 - `riantr/tesseract` 是一个 JSON 数据库，和 OCR 无关。
 
+## 性能基准
+
+基准位于 `benchmarks/`，使用 `moon bench` 的 native release 模式。数据是合成输入，不是端到端模型耗时：
+
+```sh
+moon bench --target native --release benchmarks
+```
+
+| 项目 | 优化前 | 优化后 | 说明 |
+| --- | --- | --- | --- |
+| `db_quads` 960×960 | 54.45 ms | 4.00 ms | 只对连通域边界像素建凸包 |
+| `db_regions` 960×960 | 54.47 ms | 3.99 ms | 同一次连通域同时输出两种框 |
+| `warp` 600×50 | 2.24 ms | 1.06 ms | 每个输出像素只投影一次，四通道共用权重 |
+| `prepare_det` 780×300 | 7.32 ms | 6.86 ms | 归一化使用 256 项查找表 |
+| `ctc_decode` 80×100 | 3.06 µs | 3.15 µs | 噪声范围内，未做针对性优化 |
+
+优化后的检测框和识别文本与优化前一致，已用 `samples/page.png` 和真实 PP-OCRv4 模型回归。
+
 ## 测试
 
 ```sh
 moon test
 moon test --target native
+moon bench --target native --release benchmarks
 ```
 
 wasm 测试覆盖解码、预处理、连通域、最小面积矩形、透视裁切、CTC、空格类、`Page::render`、`Page` JSON 和 Options builders。native 另外检查：不存在的运行时库返回 `OcrError::Runtime`，缺字典时在打开运行时之前返回 `OcrError::Io`，无效 `EngineOptions` 返回 `OcrError::Config`，并用 fake `Backend` 检查分步流水线。
