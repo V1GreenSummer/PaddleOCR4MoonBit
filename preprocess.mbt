@@ -119,23 +119,33 @@ fn resize_rgba(
 }
 
 ///|
+fn make_lut(mean : Double, std : Double) -> FixedArray[Float] {
+  let lut : FixedArray[Float] = FixedArray::make(256, 0.0)
+  for index in 0..<256 {
+    lut[index] = Float::from_double((index.to_double() / 255.0 - mean) / std)
+  }
+  lut
+}
+
+///|
 fn normalize_rgb(image : Rgba, norm : Norm) -> ChwTensor raise OcrError {
   if norm.sr == 0.0 || norm.sg == 0.0 || norm.sb == 0.0 {
     raise OcrError::Image("normalization std is zero")
   }
+  // `Norm` stores the ImageNet RGB means; PP-OCR applies them in BGR order.
+  let lut_blue = make_lut(norm.r, norm.sr)
+  let lut_green = make_lut(norm.g, norm.sg)
+  let lut_red = make_lut(norm.b, norm.sb)
   let plane = image.width * image.height
   let values : Array[Float] = Array::make(plane * 3, 0.0)
   for y in 0..<image.height {
     for x in 0..<image.width {
       let source = (y * image.width + x) * 4
-      let red = image.pixels[source].to_int().to_double() / 255.0
-      let green = image.pixels[source + 1].to_int().to_double() / 255.0
-      let blue = image.pixels[source + 2].to_int().to_double() / 255.0
       let offset = y * image.width + x
       // PP-OCR feeds OpenCV BGR into NormalizeImage, so channel 0 is blue.
-      values[offset] = Float::from_double((blue - norm.r) / norm.sr)
-      values[plane + offset] = Float::from_double((green - norm.g) / norm.sg)
-      values[plane * 2 + offset] = Float::from_double((red - norm.b) / norm.sb)
+      values[offset] = lut_blue[image.pixels[source + 2].to_int()]
+      values[plane + offset] = lut_green[image.pixels[source + 1].to_int()]
+      values[plane * 2 + offset] = lut_red[image.pixels[source].to_int()]
     }
   }
   { height: image.height, width: image.width, values, }

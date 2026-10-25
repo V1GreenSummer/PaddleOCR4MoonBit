@@ -107,12 +107,11 @@ fn clamp_index(value : Int32, limit : Int32) -> Int32 {
 }
 
 ///|
-fn sample_channel(
+fn sample_pixel(
   image : Rgba,
   x : Double,
   y : Double,
-  channel : Int32,
-) -> Byte {
+) -> (Byte, Byte, Byte, Byte) {
   let column = x.floor().to_int()
   let row = y.floor().to_int()
   let raw_tx = x - column.to_double()
@@ -123,23 +122,31 @@ fn sample_channel(
   let y0 = clamp_index(row, image.height)
   let x1 = clamp_index(column + 1, image.width)
   let y1 = clamp_index(row + 1, image.height)
-  fn at(px : Int32, py : Int32) -> Double {
-    image.pixels[(py * image.width + px) * 4 + channel].to_int().to_double()
+  let p00 = (y0 * image.width + x0) * 4
+  let p10 = (y0 * image.width + x1) * 4
+  let p01 = (y1 * image.width + x0) * 4
+  let p11 = (y1 * image.width + x1) * 4
+  let w00 = (1.0 - tx) * (1.0 - ty)
+  let w10 = tx * (1.0 - ty)
+  let w01 = (1.0 - tx) * ty
+  let w11 = tx * ty
+  fn channel(offset : Int32) -> Byte {
+    let mixed = w00 * image.pixels[p00 + offset].to_int().to_double() +
+      w10 * image.pixels[p10 + offset].to_int().to_double() +
+      w01 * image.pixels[p01 + offset].to_int().to_double() +
+      w11 * image.pixels[p11 + offset].to_int().to_double()
+    let rounded = mixed.round().to_int()
+    let byte = if rounded <= 0 {
+      0
+    } else if rounded >= 255 {
+      255
+    } else {
+      rounded
+    }
+    byte.to_byte()
   }
 
-  let mixed = (1.0 - tx) * (1.0 - ty) * at(x0, y0) +
-    tx * (1.0 - ty) * at(x1, y0) +
-    (1.0 - tx) * ty * at(x0, y1) +
-    tx * ty * at(x1, y1)
-  let rounded = mixed.round().to_int()
-  let byte = if rounded <= 0 {
-    0
-  } else if rounded >= 255 {
-    255
-  } else {
-    rounded
-  }
-  byte.to_byte()
+  (channel(0), channel(1), channel(2), channel(3))
 }
 
 ///|
@@ -193,15 +200,19 @@ pub fn Rgba::warp(self : Rgba, quad : DetQuad) -> Rgba raise OcrError {
     Some(coeffs) => coeffs
     None => raise OcrError::Image("text quad is degenerate")
   }
-  let pixels = Bytes::makei(width * height * 4, fn(index) {
-    let pixel = index / 4
-    let channel = index % 4
-    let column = pixel % width
-    let row = pixel / width
-    let source = project(coeffs, column.to_double(), row.to_double())
-    sample_channel(self, source.x, source.y, channel)
-  })
-  let warped : Rgba = { width, height, pixels, }
+  let pixels : FixedArray[Byte] = FixedArray::make(width * height * 4, b'\x00')
+  for row in 0..<height {
+    for column in 0..<width {
+      let source = project(coeffs, column.to_double(), row.to_double())
+      let (red, green, blue, alpha) = sample_pixel(self, source.x, source.y)
+      let offset = (row * width + column) * 4
+      pixels[offset] = red
+      pixels[offset + 1] = green
+      pixels[offset + 2] = blue
+      pixels[offset + 3] = alpha
+    }
+  }
+  let warped : Rgba = { width, height, pixels: Bytes::from_array(pixels), }
   if height.to_double() / width.to_double() >= 1.5 {
     rotate_ccw(warped)
   } else {
