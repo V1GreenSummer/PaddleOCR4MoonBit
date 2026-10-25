@@ -1,0 +1,4 @@
+import {
+  "V1GreenSummer/paddleocr",
+  "moonbitlang/core/bench",
+}
