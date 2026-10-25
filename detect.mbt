@@ -68,7 +68,7 @@ fn push_stack(stack : Array[Int32], cursor : Int32, value : Int32) -> Int32 {
 fn consider(
   stack : Array[Int32],
   cursor : Int32,
-  seen : Array[Int32],
+  seen : FixedArray[Byte],
   prob : Array[Float],
   thresh : Double,
   x : Int32,
@@ -80,10 +80,10 @@ fn consider(
     return cursor
   }
   let index = y * width + x
-  if seen[index] != 0 || prob[index].to_double() < thresh {
+  if seen[index] != b'\x00' || prob[index].to_double() < thresh {
     return cursor
   }
-  seen[index] = 1
+  seen[index] = b'\x01'
   push_stack(stack, cursor, index)
 }
 
@@ -94,7 +94,7 @@ priv struct DetComponent {
   max_x : Int32
   max_y : Int32
   score : Double
-  pixels : Array[Int32]
+  points : Array[Point]
 }
 
 ///|
@@ -104,7 +104,7 @@ fn scan_components(
   width~ : Int32,
   thresh~ : Double,
   box_thresh~ : Double,
-  collect_pixels~ : Bool,
+  collect_points~ : Bool,
 ) -> Array[DetComponent] raise OcrError {
   if width <= 0 || height <= 0 {
     raise OcrError::Model("probability map size must be positive")
@@ -112,16 +112,16 @@ fn scan_components(
   if prob.length() != width * height {
     raise OcrError::Model("probability map length does not match width*height")
   }
-  let seen : Array[Int32] = Array::make(width * height, 0)
+  let seen : FixedArray[Byte] = FixedArray::make(width * height, b'\x00')
   let stack : Array[Int32] = []
   let components : Array[DetComponent] = []
   for y in 0..<height {
     for x in 0..<width {
       let seed = y * width + x
-      if seen[seed] != 0 || prob[seed].to_double() < thresh {
+      if seen[seed] != b'\x00' || prob[seed].to_double() < thresh {
         continue
       }
-      seen[seed] = 1
+      seen[seed] = b'\x01'
       let mut cursor = push_stack(stack, 0, seed)
       let pixels : Array[Int32] = []
       let mut min_x = x
@@ -136,7 +136,7 @@ fn scan_components(
         let column = index % width
         let row = index / width
         count = count + 1
-        if collect_pixels {
+        if collect_points {
           pixels.push(index)
         }
         if column < min_x {
@@ -204,7 +204,30 @@ fn scan_components(
       if score < box_thresh {
         continue
       }
-      components.push({ min_x, min_y, max_x, max_y, score, pixels, })
+      let points : Array[Point] = []
+      if collect_points {
+        for index in pixels {
+          let column = index % width
+          let row = index / width
+          let boundary = column == 0 ||
+            column + 1 >= width ||
+            row == 0 ||
+            row + 1 >= height ||
+            seen[index - 1] == b'\x00' ||
+            seen[index + 1] == b'\x00' ||
+            seen[index - width] == b'\x00' ||
+            seen[index + width] == b'\x00'
+          if boundary {
+            let left = column.to_double()
+            let top = row.to_double()
+            points.push({ x: left, y: top, })
+            points.push({ x: left + 1.0, y: top, })
+            points.push({ x: left + 1.0, y: top + 1.0, })
+            points.push({ x: left, y: top + 1.0, })
+          }
+        }
+      }
+      components.push({ min_x, min_y, max_x, max_y, score, points, })
     }
   }
   components
@@ -257,20 +280,10 @@ fn box_from_component(
 ///|
 fn quad_from_component(
   component : DetComponent,
-  width~ : Int32,
   unclip_ratio~ : Double,
   min_size~ : Int32,
 ) -> DetQuad? raise OcrError {
-  let points : Array[Point] = []
-  for index in component.pixels {
-    let left = (index % width).to_double()
-    let top = (index / width).to_double()
-    points.push({ x: left, y: top, })
-    points.push({ x: left + 1.0, y: top, })
-    points.push({ x: left + 1.0, y: top + 1.0, })
-    points.push({ x: left, y: top + 1.0, })
-  }
-  let fitted = min_area_rect(points)
+  let fitted = min_area_rect(component.points)
   if quad_short_side(fitted) < min_size.to_double() {
     None
   } else {
@@ -299,7 +312,7 @@ pub fn db_boxes(
     width~,
     thresh~,
     box_thresh~,
-    collect_pixels=false,
+    collect_points=false,
   )
   let boxes : Array[DetBox] = []
   for component in components {
@@ -337,11 +350,11 @@ pub fn db_quads(
     width~,
     thresh~,
     box_thresh~,
-    collect_pixels=true,
+    collect_points=true,
   )
   let quads : Array[DetQuad] = []
   for component in components {
-    match quad_from_component(component, width~, unclip_ratio~, min_size~) {
+    match quad_from_component(component, unclip_ratio~, min_size~) {
       Some(quad) => quads.push(quad)
       None => ()
     }
@@ -370,7 +383,7 @@ pub fn db_regions(
     width~,
     thresh~,
     box_thresh~,
-    collect_pixels=true,
+    collect_points=true,
   )
   let boxes : Array[DetBox] = []
   let quads : Array[DetQuad] = []
@@ -386,7 +399,7 @@ pub fn db_regions(
       Some(box) => boxes.push(box)
       None => ()
     }
-    match quad_from_component(component, width~, unclip_ratio~, min_size~) {
+    match quad_from_component(component, unclip_ratio~, min_size~) {
       Some(quad) => quads.push(quad)
       None => ()
     }
