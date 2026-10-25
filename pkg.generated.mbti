@@ -1,0 +1,251 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "V1GreenSummer/paddleocr"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn ctc_decode(ArrayView[Float], time~ : Int, classes~ : Int, charset~ : Charset) -> CtcText raise OcrError
+
+pub fn ctc_greedy(ArrayView[Float], time~ : Int, classes~ : Int, charset~ : Charset) -> String raise OcrError
+
+pub fn db_boxes(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> Array[DetBox] raise OcrError
+
+pub fn db_quads(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> Array[DetQuad] raise OcrError
+
+pub fn db_regions(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> DetRegions raise OcrError
+
+pub fn decode_raster(Bytes) -> Rgba raise OcrError
+
+pub fn group_lines(Array[GlyphBox]) -> Array[Array[GlyphBox]]
+
+pub fn group_placed(Array[PlacedText]) -> Array[Array[PlacedText]]
+
+pub fn limit_side_size(Int, Int, limit~ : Int) -> (Int, Int) raise OcrError
+
+pub fn map_det_box(DetBox, ratio_w~ : Double, ratio_h~ : Double, width~ : Int, height~ : Int) -> GlyphBox?
+
+pub fn min_area_rect(Array[Point]) -> DetQuad raise OcrError
+
+pub fn order_corners(Array[Point], score? : Double) -> DetQuad raise OcrError
+
+pub fn prepare_det(Rgba, limit_side_len? : Int) -> DetTensor raise OcrError
+
+pub fn prepare_rec(Rgba, height? : Int, max_width? : Int, fixed_width? : Int) -> ChwTensor raise OcrError
+
+pub fn sniff_raster(Bytes) -> RasterKind raise OcrError
+
+pub fn unclip_quad(DetQuad, ratio~ : Double) -> DetQuad raise OcrError
+
+// Errors
+pub suberror OcrError {
+  Image(String)
+  Model(String)
+  Runtime(String)
+  Io(String)
+  Config(String)
+  Usage(String)
+}
+pub fn OcrError::config(String) -> Self
+pub fn OcrError::image(String) -> Self
+pub fn OcrError::io(String) -> Self
+pub fn OcrError::model(String) -> Self
+pub fn OcrError::output(Self, &Logger) -> Unit
+pub fn OcrError::runtime(String) -> Self
+pub fn OcrError::to_string(Self) -> String
+pub fn OcrError::usage(String) -> Self
+pub impl Show for OcrError
+
+// Types and methods
+pub struct Charset {
+  chars : Array[String]
+} derive(Eq, @debug.Debug)
+pub fn Charset::equal(Self, Self) -> Bool
+pub fn Charset::from_text(String) -> Self
+pub fn Charset::glyph(Self, Int) -> String?
+pub fn Charset::not_equal(Self, Self) -> Bool
+pub fn Charset::ppocr(String) -> Self
+pub fn Charset::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ChwTensor {
+  height : Int
+  width : Int
+  values : Array[Float]
+} derive(Eq, @debug.Debug)
+pub fn ChwTensor::equal(Self, Self) -> Bool
+pub fn ChwTensor::not_equal(Self, Self) -> Bool
+pub fn ChwTensor::to_repr(Self) -> @debug.Repr
+
+pub(all) struct CtcText {
+  text : String
+  confidence : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn CtcText::equal(Self, Self) -> Bool
+pub fn CtcText::not_equal(Self, Self) -> Bool
+pub fn CtcText::to_json(Self) -> Json
+pub fn CtcText::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DetBox {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+  score : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn DetBox::equal(Self, Self) -> Bool
+pub fn DetBox::not_equal(Self, Self) -> Bool
+pub fn DetBox::to_json(Self) -> Json
+pub fn DetBox::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DetQuad {
+  top_left : Point
+  top_right : Point
+  bottom_right : Point
+  bottom_left : Point
+  score : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn DetQuad::bounds(Self, Int, Int) -> GlyphBox?
+pub fn DetQuad::equal(Self, Self) -> Bool
+pub fn DetQuad::not_equal(Self, Self) -> Bool
+pub fn DetQuad::place(Self, Int, Int) -> PlacedText?
+pub fn DetQuad::scale(Self, Double, Double) -> Self
+pub fn DetQuad::to_json(Self) -> Json
+pub fn DetQuad::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DetRegions {
+  boxes : Array[DetBox]
+  quads : Array[DetQuad]
+} derive(Eq, ToJson, @debug.Debug)
+pub fn DetRegions::equal(Self, Self) -> Bool
+pub fn DetRegions::not_equal(Self, Self) -> Bool
+pub fn DetRegions::to_json(Self) -> Json
+pub fn DetRegions::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DetTensor {
+  tensor : ChwTensor
+  ratio_w : Double
+  ratio_h : Double
+} derive(Eq, @debug.Debug)
+pub fn DetTensor::equal(Self, Self) -> Bool
+pub fn DetTensor::not_equal(Self, Self) -> Bool
+pub fn DetTensor::to_repr(Self) -> @debug.Repr
+
+pub(all) struct GlyphBox {
+  x : Int
+  y : Int
+  width : Int
+  height : Int
+  score : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn GlyphBox::equal(Self, Self) -> Bool
+pub fn GlyphBox::not_equal(Self, Self) -> Bool
+pub fn GlyphBox::to_json(Self) -> Json
+pub fn GlyphBox::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Page {
+  lines : Array[TextLine]
+} derive(Eq, @debug.Debug)
+pub fn Page::equal(Self, Self) -> Bool
+pub fn Page::from_lines(Array[TextLine]) -> Self
+pub fn Page::not_equal(Self, Self) -> Bool
+pub fn Page::output(Self, &Logger) -> Unit
+pub fn Page::render(Self, boxes? : Bool) -> String
+pub fn Page::spans(Self) -> Array[TextSpan]
+pub fn Page::text(Self) -> String
+pub fn Page::to_json(Self) -> Json
+pub fn Page::to_json_string(Self) -> String
+pub fn Page::to_repr(Self) -> @debug.Repr
+pub fn Page::to_string(Self) -> String
+pub impl Show for Page
+pub impl ToJson for Page
+
+pub(all) struct PlacedText {
+  quad : DetQuad
+  bounds : GlyphBox
+} derive(Eq, ToJson, @debug.Debug)
+pub fn PlacedText::equal(Self, Self) -> Bool
+pub fn PlacedText::not_equal(Self, Self) -> Bool
+pub fn PlacedText::to_json(Self) -> Json
+pub fn PlacedText::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Point {
+  x : Double
+  y : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn Point::equal(Self, Self) -> Bool
+pub fn Point::not_equal(Self, Self) -> Bool
+pub fn Point::to_json(Self) -> Json
+pub fn Point::to_repr(Self) -> @debug.Repr
+
+pub enum RasterKind {
+  Png
+  Jpeg
+  Bmp
+} derive(Eq, @debug.Debug)
+pub fn RasterKind::equal(Self, Self) -> Bool
+pub fn RasterKind::not_equal(Self, Self) -> Bool
+pub fn RasterKind::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RecognizeOptions {
+  limit_side_len : Int
+  det_thresh : Double
+  box_thresh : Double
+  unclip_ratio : Double
+  min_size : Int
+  rec_max_width : Int
+  rec_thresh : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn RecognizeOptions::default() -> Self
+pub fn RecognizeOptions::equal(Self, Self) -> Bool
+pub fn RecognizeOptions::not_equal(Self, Self) -> Bool
+pub fn RecognizeOptions::standard() -> Self
+pub fn RecognizeOptions::to_json(Self) -> Json
+pub fn RecognizeOptions::to_repr(Self) -> @debug.Repr
+pub fn RecognizeOptions::with_box_thresh(Self, Double) -> Self
+pub fn RecognizeOptions::with_det_thresh(Self, Double) -> Self
+pub fn RecognizeOptions::with_limit(Self, Int) -> Self
+pub fn RecognizeOptions::with_min_size(Self, Int) -> Self
+pub fn RecognizeOptions::with_rec_max_width(Self, Int) -> Self
+pub fn RecognizeOptions::with_rec_thresh(Self, Double) -> Self
+pub fn RecognizeOptions::with_unclip_ratio(Self, Double) -> Self
+pub impl Default for RecognizeOptions
+
+pub(all) struct Rgba {
+  width : Int
+  height : Int
+  pixels : Bytes
+} derive(Eq, @debug.Debug)
+pub fn Rgba::crop(Self, Int, Int, Int, Int) -> Self raise OcrError
+pub fn Rgba::equal(Self, Self) -> Bool
+pub fn Rgba::from_rgba(Int, Int, Bytes) -> Self raise OcrError
+pub fn Rgba::not_equal(Self, Self) -> Bool
+pub fn Rgba::to_repr(Self) -> @debug.Repr
+pub fn Rgba::warp(Self, DetQuad) -> Self raise OcrError
+
+pub(all) struct TextLine {
+  spans : Array[TextSpan]
+} derive(Eq, @debug.Debug)
+pub fn TextLine::equal(Self, Self) -> Bool
+pub fn TextLine::from_spans(Array[TextSpan]) -> Self
+pub fn TextLine::not_equal(Self, Self) -> Bool
+pub fn TextLine::text(Self) -> String
+pub fn TextLine::to_json(Self) -> Json
+pub fn TextLine::to_repr(Self) -> @debug.Repr
+pub impl ToJson for TextLine
+
+pub(all) struct TextSpan {
+  quad : DetQuad
+  bounds : GlyphBox
+  text : String
+  det_score : Double
+  rec_confidence : Double
+} derive(Eq, ToJson, @debug.Debug)
+pub fn TextSpan::equal(Self, Self) -> Bool
+pub fn TextSpan::not_equal(Self, Self) -> Bool
+pub fn TextSpan::to_json(Self) -> Json
+pub fn TextSpan::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
