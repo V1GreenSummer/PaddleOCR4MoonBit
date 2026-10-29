@@ -18,6 +18,8 @@ MoonBit OCR 2026
 
 ## 安装
 
+工具链要求 `moonc >= 0.10.16`；本仓库在 `v0.10.18+6c83a7f62` 上验证。安装方式见 <https://www.moonbitlang.com/download>。
+
 ```sh
 moon add V1GreenSummer/paddleocr@0.1.0
 ```

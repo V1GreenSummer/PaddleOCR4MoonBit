@@ -23,6 +23,15 @@ jobs:
       - name: Report MoonBit version
         run: moon version --all
 
+      - name: Require moonc 0.10.16+
+        run: |
+          version=$(moonc -v | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          echo "moonc $version"
+          if [ "$(printf '%s\n' '0.10.16' "$version" | sort -V | tail -1)" != "$version" ]; then
+            echo "MoonBit 0.10.16 or newer is required" >&2
+            exit 1
+          fi
+
       - name: Update package registry
         run: moon update
 
