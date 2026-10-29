@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/V1GreenSummer/PaddleOCR4MoonBit/actions/workflows/ci.yml/badge.svg)](https://github.com/V1GreenSummer/PaddleOCR4MoonBit/actions/workflows/ci.yml)
 
-`V1GreenSummer/paddleocr` 0.1.0，Apache-2.0。把 PaddleOCR 的检测模型和识别模型接到 MoonBit：`mizchi/image` 解码图片，纯 MoonBit 做预处理和后处理，`HuLunTunTao/moon-ort` 在本机 CPU 上调用 ONNX Runtime。
+`V1GreenSummer/paddleocr` 0.1.1，Apache-2.0。把 PaddleOCR 的检测模型和识别模型接到 MoonBit：`mizchi/image` 解码图片，纯 MoonBit 做预处理和后处理，`HuLunTunTao/moon-ort` 在本机 CPU 上调用 ONNX Runtime。
 
 `CXREN/moonocr` 是零依赖的纯 MoonBit 引擎，字符表只有数字和英文字母。这个包走另一条路：字符表、检测和识别都由外部 ONNX 模型决定，所以可以读中文。包本身不内置权重。
 
@@ -21,7 +21,7 @@ MoonBit OCR 2026
 工具链要求 `moonc >= 0.10.16`；本仓库在 `v0.10.18+6c83a7f62` 上验证。安装方式见 <https://www.moonbitlang.com/download>。
 
 ```sh
-moon add V1GreenSummer/paddleocr@0.1.0
+moon add V1GreenSummer/paddleocr@0.1.1
 ```
 
 根包用于 wasm 侧的解码、预处理和后处理：
