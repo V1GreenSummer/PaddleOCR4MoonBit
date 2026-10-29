@@ -6,15 +6,15 @@ import {
 }
 
 // Values
-pub fn ctc_decode(ArrayView[Float], time~ : Int, classes~ : Int, charset~ : Charset) -> CtcText raise OcrError
+pub fn ctc_decode(ArrayView[Float], time~ : Int32, classes~ : Int32, charset~ : Charset) -> CtcText raise OcrError
 
-pub fn ctc_greedy(ArrayView[Float], time~ : Int, classes~ : Int, charset~ : Charset) -> String raise OcrError
+pub fn ctc_greedy(ArrayView[Float], time~ : Int32, classes~ : Int32, charset~ : Charset) -> String raise OcrError
 
-pub fn db_boxes(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> Array[DetBox] raise OcrError
+pub fn db_boxes(Array[Float], height~ : Int32, width~ : Int32, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int32) -> Array[DetBox] raise OcrError
 
-pub fn db_quads(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> Array[DetQuad] raise OcrError
+pub fn db_quads(Array[Float], height~ : Int32, width~ : Int32, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int32) -> Array[DetQuad] raise OcrError
 
-pub fn db_regions(Array[Float], height~ : Int, width~ : Int, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int) -> DetRegions raise OcrError
+pub fn db_regions(Array[Float], height~ : Int32, width~ : Int32, thresh? : Double, box_thresh? : Double, unclip_ratio? : Double, min_size? : Int32) -> DetRegions raise OcrError
 
 pub fn decode_raster(Bytes) -> Rgba raise OcrError
 
@@ -22,17 +22,17 @@ pub fn group_lines(Array[GlyphBox]) -> Array[Array[GlyphBox]]
 
 pub fn group_placed(Array[PlacedText]) -> Array[Array[PlacedText]]
 
-pub fn limit_side_size(Int, Int, limit~ : Int) -> (Int, Int) raise OcrError
+pub fn limit_side_size(Int32, Int32, limit~ : Int32) -> (Int32, Int32) raise OcrError
 
-pub fn map_det_box(DetBox, ratio_w~ : Double, ratio_h~ : Double, width~ : Int, height~ : Int) -> GlyphBox?
+pub fn map_det_box(DetBox, ratio_w~ : Double, ratio_h~ : Double, width~ : Int32, height~ : Int32) -> GlyphBox?
 
 pub fn min_area_rect(Array[Point]) -> DetQuad raise OcrError
 
 pub fn order_corners(Array[Point], score? : Double) -> DetQuad raise OcrError
 
-pub fn prepare_det(Rgba, limit_side_len? : Int) -> DetTensor raise OcrError
+pub fn prepare_det(Rgba, limit_side_len? : Int32) -> DetTensor raise OcrError
 
-pub fn prepare_rec(Rgba, height? : Int, max_width? : Int, fixed_width? : Int) -> ChwTensor raise OcrError
+pub fn prepare_rec(Rgba, height? : Int32, max_width? : Int32, fixed_width? : Int32) -> ChwTensor raise OcrError
 
 pub fn sniff_raster(Bytes) -> RasterKind raise OcrError
 
@@ -63,14 +63,14 @@ pub struct Charset {
 } derive(Eq, @debug.Debug)
 pub fn Charset::equal(Self, Self) -> Bool
 pub fn Charset::from_text(String) -> Self
-pub fn Charset::glyph(Self, Int) -> String?
+pub fn Charset::glyph(Self, Int32) -> String?
 pub fn Charset::not_equal(Self, Self) -> Bool
 pub fn Charset::ppocr(String) -> Self
 pub fn Charset::to_repr(Self) -> @debug.Repr
 
 pub(all) struct ChwTensor {
-  height : Int
-  width : Int
+  height : Int32
+  width : Int32
   values : Array[Float]
 } derive(Eq, @debug.Debug)
 pub fn ChwTensor::equal(Self, Self) -> Bool
@@ -105,10 +105,10 @@ pub(all) struct DetQuad {
   bottom_left : Point
   score : Double
 } derive(Eq, ToJson, @debug.Debug)
-pub fn DetQuad::bounds(Self, Int, Int) -> GlyphBox?
+pub fn DetQuad::bounds(Self, Int32, Int32) -> GlyphBox?
 pub fn DetQuad::equal(Self, Self) -> Bool
 pub fn DetQuad::not_equal(Self, Self) -> Bool
-pub fn DetQuad::place(Self, Int, Int) -> PlacedText?
+pub fn DetQuad::place(Self, Int32, Int32) -> PlacedText?
 pub fn DetQuad::scale(Self, Double, Double) -> Self
 pub fn DetQuad::to_json(Self) -> Json
 pub fn DetQuad::to_repr(Self) -> @debug.Repr
@@ -132,10 +132,10 @@ pub fn DetTensor::not_equal(Self, Self) -> Bool
 pub fn DetTensor::to_repr(Self) -> @debug.Repr
 
 pub(all) struct GlyphBox {
-  x : Int
-  y : Int
-  width : Int
-  height : Int
+  x : Int32
+  y : Int32
+  width : Int32
+  height : Int32
   score : Double
 } derive(Eq, ToJson, @debug.Debug)
 pub fn GlyphBox::equal(Self, Self) -> Bool
@@ -188,12 +188,12 @@ pub fn RasterKind::not_equal(Self, Self) -> Bool
 pub fn RasterKind::to_repr(Self) -> @debug.Repr
 
 pub(all) struct RecognizeOptions {
-  limit_side_len : Int
+  limit_side_len : Int32
   det_thresh : Double
   box_thresh : Double
   unclip_ratio : Double
-  min_size : Int
-  rec_max_width : Int
+  min_size : Int32
+  rec_max_width : Int32
   rec_thresh : Double
 } derive(Eq, ToJson, @debug.Debug)
 pub fn RecognizeOptions::default() -> Self
@@ -204,21 +204,21 @@ pub fn RecognizeOptions::to_json(Self) -> Json
 pub fn RecognizeOptions::to_repr(Self) -> @debug.Repr
 pub fn RecognizeOptions::with_box_thresh(Self, Double) -> Self
 pub fn RecognizeOptions::with_det_thresh(Self, Double) -> Self
-pub fn RecognizeOptions::with_limit(Self, Int) -> Self
-pub fn RecognizeOptions::with_min_size(Self, Int) -> Self
-pub fn RecognizeOptions::with_rec_max_width(Self, Int) -> Self
+pub fn RecognizeOptions::with_limit(Self, Int32) -> Self
+pub fn RecognizeOptions::with_min_size(Self, Int32) -> Self
+pub fn RecognizeOptions::with_rec_max_width(Self, Int32) -> Self
 pub fn RecognizeOptions::with_rec_thresh(Self, Double) -> Self
 pub fn RecognizeOptions::with_unclip_ratio(Self, Double) -> Self
 pub impl Default for RecognizeOptions
 
 pub(all) struct Rgba {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
   pixels : Bytes
 } derive(Eq, @debug.Debug)
-pub fn Rgba::crop(Self, Int, Int, Int, Int) -> Self raise OcrError
+pub fn Rgba::crop(Self, Int32, Int32, Int32, Int32) -> Self raise OcrError
 pub fn Rgba::equal(Self, Self) -> Bool
-pub fn Rgba::from_rgba(Int, Int, Bytes) -> Self raise OcrError
+pub fn Rgba::from_rgba(Int32, Int32, Bytes) -> Self raise OcrError
 pub fn Rgba::not_equal(Self, Self) -> Bool
 pub fn Rgba::to_repr(Self) -> @debug.Repr
 pub fn Rgba::warp(Self, DetQuad) -> Self raise OcrError
