@@ -23,12 +23,12 @@ jobs:
       - name: Report MoonBit version
         run: moon version --all
 
-      - name: Require moonc 0.10.16+
+      - name: Require moonc 0.10.20+
         run: |
           version=$(moonc -v | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           echo "moonc $version"
-          if [ "$(printf '%s\n' '0.10.16' "$version" | sort -V | tail -1)" != "$version" ]; then
-            echo "MoonBit 0.10.16 or newer is required" >&2
+          if [ "$(printf '%s\n' '0.10.20' "$version" | sort -V | tail -1)" != "$version" ]; then
+            echo "MoonBit 0.10.20 or newer is required" >&2
             exit 1
           fi
 
@@ -53,4 +53,6 @@ jobs:
       - name: Check generated interface
         run: |
           moon info
-          git diff --exit-code -- '**/pkg.generated.mbti'
+          # ':(glob)' is required: a bare '**/pkg.generated.mbti' pathspec does
+          # not match the root package file and would skip it.
+          git diff --exit-code -- ':(glob)**/pkg.generated.mbti'

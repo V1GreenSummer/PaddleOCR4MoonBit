@@ -14,12 +14,12 @@ preferred_target = "wasm"
 
 description = "PaddleOCR glue for MoonBit: JPEG/PNG/BMP decode, DBNet boxes, CTC decode, and native ONNX Runtime inference."
 
-// image@0.4.3 pins zlib 0.4.8, which still depends on async 0.16.6 and a
-// moon.mod.json manifest this toolchain rejects. The direct zlib 0.4.10
-// dependency is what the module actually resolves.
+// image@0.5.0 pins zlib 0.4.10, which still drags in async 0.22.4. The direct
+// zlib 0.4.12 dependency drops async from the graph; it is the version this
+// module actually resolves.
 import {
-  "mizchi/zlib@0.4.10",
-  "mizchi/image@0.4.3",
+  "mizchi/zlib@0.4.12",
+  "mizchi/image@0.5.0",
   "HuLunTunTao/moon-ort@0.1.1",
-  "moonbitlang/x@0.5.5",
+  "moonbitlang/x@0.5.7",
 }

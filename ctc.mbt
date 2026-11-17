@@ -1,9 +1,10 @@
 ///|
 /// PP-OCR character dictionary. Class 0 is the CTC blank and is not stored.
 /// Class `k` is line `k - 1`.
+#derive(Debug, Eq)
 pub struct Charset {
   chars : Array[String]
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend Charset with Eq::{not_equal, equal}
@@ -79,10 +80,11 @@ pub fn Charset::glyph(self : Charset, class : Int32) -> String? {
 
 ///|
 /// Greedy CTC text and the mean probability of the kept characters.
+#derive(Debug, Eq, ToJson)
 pub(all) struct CtcText {
   text : String
   confidence : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend CtcText with Eq::{not_equal, equal}

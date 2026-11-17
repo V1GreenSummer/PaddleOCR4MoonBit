@@ -1,13 +1,14 @@
 ///|
 /// One text region on the detection probability map, before it is scaled back
 /// to the source image.
+#derive(Debug, Eq, ToJson)
 pub(all) struct DetBox {
   x : Double
   y : Double
   width : Double
   height : Double
   score : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend DetBox with Eq::{not_equal, equal}
@@ -20,13 +21,14 @@ pub extend DetBox with @debug.Debug::{to_repr}
 
 ///|
 /// Axis-aligned text region in source pixels.
+#derive(Debug, Eq, ToJson)
 pub(all) struct GlyphBox {
   x : Int32
   y : Int32
   width : Int32
   height : Int32
   score : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend GlyphBox with Eq::{not_equal, equal}
@@ -40,10 +42,11 @@ pub extend GlyphBox with @debug.Debug::{to_repr}
 ///|
 /// Axis-aligned and rotated views of the same probability map, computed in one
 /// connected-component pass.
+#derive(Debug, Eq, ToJson)
 pub(all) struct DetRegions {
   boxes : Array[DetBox]
   quads : Array[DetQuad]
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend DetRegions with Eq::{not_equal, equal}

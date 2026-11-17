@@ -1,10 +1,11 @@
 ///|
 /// Raster container recognized by the decoder.
+#derive(Eq, Debug)
 pub enum RasterKind {
   Png
   Jpeg
   Bmp
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend RasterKind with Eq::{not_equal, equal}

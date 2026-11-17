@@ -18,7 +18,7 @@ MoonBit OCR 2026
 
 ## 安装
 
-工具链要求 `moonc >= 0.10.16`；本仓库在 `v0.10.18+6c83a7f62` 上验证。安装方式见 <https://www.moonbitlang.com/download>。
+工具链要求 `moonc >= 0.10.20`；本仓库在 `v0.10.20+65efd5b93` 上验证。安装方式见 <https://www.moonbitlang.com/download>。
 
 ```sh
 moon add V1GreenSummer/paddleocr@0.1.1
@@ -127,7 +127,7 @@ cmd/ocr/                         native 可执行文件
 
 GitHub: <https://github.com/V1GreenSummer/PaddleOCR4MoonBit>
 
-依赖：`mizchi/image@0.4.3`、`mizchi/zlib@0.4.10`、`HuLunTunTao/moon-ort@0.1.1`、`moonbitlang/x@0.5.5`。直接写上 zlib 0.4.10，是因为 image 0.4.3 钉住的 zlib 0.4.8 还依赖一份当前工具链拒绝的 `moon.mod.json`。
+依赖：`mizchi/image@0.5.0`、`mizchi/zlib@0.4.12`、`HuLunTunTao/moon-ort@0.1.1`、`moonbitlang/x@0.5.7`。直接写上 zlib 0.4.12，是因为 image 0.5.0 钉住的 zlib 0.4.10 还会拉进 `moonbitlang/async`，而 0.4.12 已经不需要它。
 
 ## 第三方依赖与许可证
 
@@ -135,10 +135,10 @@ GitHub: <https://github.com/V1GreenSummer/PaddleOCR4MoonBit>
 
 | 组件 | 许可证 | 说明 |
 | --- | --- | --- |
-| `mizchi/image` 0.4.3 | Apache-2.0 | PNG/JPEG/BMP 解码与缩放 |
-| `mizchi/zlib` 0.4.10 | Apache-2.0 | `mizchi/image` 的 zlib 依赖 |
+| `mizchi/image` 0.5.0 | Apache-2.0 | PNG/JPEG/BMP 解码与缩放 |
+| `mizchi/zlib` 0.4.12 | Apache-2.0 | `mizchi/image` 的 zlib 依赖 |
 | `HuLunTunTao/moon-ort` 0.1.1 | MIT | ONNX Runtime 的 MoonBit 绑定 |
-| `moonbitlang/x` 0.5.5 | Apache-2.0 | 文件读写 |
+| `moonbitlang/x` 0.5.7 | Apache-2.0 | 文件读写 |
 | ONNX Runtime 1.30.0 | MIT | 运行时共享库，不随仓库分发 |
 | PaddleOCR / RapidOCR 模型 | Apache-2.0 | 上游模型权重，不随仓库分发 |
 

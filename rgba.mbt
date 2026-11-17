@@ -1,11 +1,12 @@
 ///|
 /// 8-bit RGBA image, row-major, top-left origin. Alpha is kept and ignored by
 /// the recognition normalizer.
+#derive(Eq, Debug)
 pub(all) struct Rgba {
   width : Int32
   height : Int32
   pixels : Bytes
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Rgba with Eq::{not_equal, equal}

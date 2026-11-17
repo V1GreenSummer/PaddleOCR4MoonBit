@@ -1,9 +1,10 @@
 ///|
 /// A point in image coordinates. Y grows downward.
+#derive(Debug, Eq, ToJson)
 pub(all) struct Point {
   x : Double
   y : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend Point with Eq::{not_equal, equal}
@@ -17,13 +18,14 @@ pub extend Point with @debug.Debug::{to_repr}
 ///|
 /// Text region as an ordered quadrilateral: top-left, top-right, bottom-right,
 /// bottom-left. `score` is the mean detection probability of the component.
+#derive(Debug, Eq, ToJson)
 pub(all) struct DetQuad {
   top_left : Point
   top_right : Point
   bottom_right : Point
   bottom_left : Point
   score : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend DetQuad with Eq::{not_equal, equal}
@@ -36,10 +38,11 @@ pub extend DetQuad with @debug.Debug::{to_repr}
 
 ///|
 /// A quadrilateral placed on the source image, plus its pixel bounds.
+#derive(Debug, Eq, ToJson)
 pub(all) struct PlacedText {
   quad : DetQuad
   bounds : GlyphBox
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend PlacedText with Eq::{not_equal, equal}

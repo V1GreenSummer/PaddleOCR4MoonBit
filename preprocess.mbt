@@ -1,11 +1,12 @@
 ///|
 /// NCHW float tensor without the leading batch axis. `values` is channel-major
 /// RGB, length `3 * height * width`.
+#derive(Eq, Debug)
 pub(all) struct ChwTensor {
   height : Int32
   width : Int32
   values : Array[Float]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend ChwTensor with Eq::{not_equal, equal}
@@ -15,11 +16,12 @@ pub extend ChwTensor with @debug.Debug::{to_repr}
 
 ///|
 /// Detection input plus the scale from the resized map back to the source.
+#derive(Debug, Eq)
 pub(all) struct DetTensor {
   tensor : ChwTensor
   ratio_w : Double
   ratio_h : Double
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend DetTensor with Eq::{not_equal, equal}

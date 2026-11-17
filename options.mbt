@@ -1,5 +1,6 @@
 ///|
 /// Detection size and DB thresholds for one call. `standard` matches PP-OCRv4.
+#derive(Debug, Eq, ToJson)
 pub(all) struct RecognizeOptions {
   limit_side_len : Int32
   det_thresh : Double
@@ -8,7 +9,7 @@ pub(all) struct RecognizeOptions {
   min_size : Int32
   rec_max_width : Int32
   rec_thresh : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend RecognizeOptions with Eq::{not_equal, equal}

@@ -2,13 +2,14 @@
 /// One recognized text region. `quad` keeps the rotated geometry, `bounds` is
 /// the axis-aligned rectangle used by `Page::render`, and the two scores keep
 /// detection and recognition confidence separate.
+#derive(Debug, Eq, ToJson)
 pub(all) struct TextSpan {
   quad : DetQuad
   bounds : GlyphBox
   text : String
   det_score : Double
   rec_confidence : Double
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend TextSpan with Eq::{not_equal, equal}
@@ -22,9 +23,10 @@ pub extend TextSpan with @debug.Debug::{to_repr}
 ///|
 /// Spans that share a reading line, already ordered left to right. `text` is
 /// computed from `spans`, so the two cannot disagree.
+#derive(Debug, Eq)
 pub(all) struct TextLine {
   spans : Array[TextSpan]
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend TextLine with Eq::{not_equal, equal}
@@ -62,9 +64,10 @@ pub impl ToJson for TextLine with fn to_json(self : TextLine) -> Json {
 
 ///|
 /// A page of reading lines.
+#derive(Debug, Eq)
 pub(all) struct Page {
   lines : Array[TextLine]
-} derive(Debug, Eq)
+}
 
 ///|
 pub extend Page with Eq::{not_equal, equal}

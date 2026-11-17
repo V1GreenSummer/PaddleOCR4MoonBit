@@ -1,12 +1,13 @@
 ///|
 /// Graph optimization level passed to ONNX Runtime.
+#derive(Debug, Eq, ToJson)
 pub(all) enum GraphOptimizationLevel {
   DisableAll
   Basic
   Extended
   Layout
   All
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend GraphOptimizationLevel with Eq::{not_equal, equal}
@@ -19,10 +20,11 @@ pub extend GraphOptimizationLevel with ToJson::{to_json}
 
 ///|
 /// Sequential or parallel execution inside one ONNX Runtime session.
+#derive(Debug, Eq, ToJson)
 pub(all) enum ExecutionMode {
   Sequential
   Parallel
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend ExecutionMode with Eq::{not_equal, equal}
@@ -37,13 +39,14 @@ pub extend ExecutionMode with ToJson::{to_json}
 /// Native session configuration. Zero thread counts keep ONNX Runtime's
 /// default. `rec_batch_size` is only used when the recognition model has a
 /// dynamic batch axis.
+#derive(Debug, Eq, ToJson)
 pub(all) struct EngineOptions {
   intra_op_threads : Int32
   inter_op_threads : Int32
   graph_optimization : GraphOptimizationLevel
   execution_mode : ExecutionMode
   rec_batch_size : Int32
-} derive(Debug, Eq, ToJson)
+}
 
 ///|
 pub extend EngineOptions with Eq::{not_equal, equal}
